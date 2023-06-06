@@ -40,6 +40,41 @@ async function dataBase() {
       const result = await todoCollection.insertOne(todo);
       res.send(result);
     });
+
+    // Change Status To Completed
+    app.patch("/completed-todo/:_id", async (req, res) => {
+      const { _id } = req.body;
+      const result = await todoCollection.updateOne(
+        { _id: new ObjectId(_id) },
+        { $set: { status: "Completed" } }
+      );
+      res.send(result);
+    });
+
+    // Edit To-Do Information
+    app.patch("/edit-todo/:_id", async (req, res) => {
+      const _id = req.params._id;
+      const todo = req.body;
+      const result = await todoCollection.updateOne(
+        { _id: new ObjectId(_id) },
+        {
+          $set: {
+            taskName: todo.taskName,
+            description: todo.description,
+            addedTime: todo.addedTime,
+          },
+        }
+      );
+      res.send(result);
+    });
+
+    // Delete To-Do By Id
+    app.delete("/delete-todo/:_id", async (req, res) => {
+      const _id = req.params._id;
+      const filter = { _id: new ObjectId(_id) };
+      const result = await todoCollection.deleteOne(filter);
+      res.send(result);
+    });
   } catch (err) {
     console.log(err.message.bgRed.bold);
     console.log(err.stack.bgBlue.bold);
